@@ -1,0 +1,40 @@
+{
+  "staging": {
+    "apigateway_enabled": true,
+    "app_function": "app.app",
+    "aws_region": "ap-southeast-2",
+    "description": "ml model zoo service",
+    "exclude": [
+      ".tox",
+      ".git"
+    ],
+    "keep_warm": true,
+    "lambda_description": "ml deployment pipeline",
+    "log_level": "DEBUG",
+    "manage_roles": false,
+    "memory_size": 1024,
+    "project_name": "modelzoo-service", 
+    "role_name": "s-modelzoo-service-ZappaAppLambdaRole-6XWCCLVXNOF", 
+    "s3_bucket": "domain-lambda-deploy-apse2",
+    "timeout_seconds": 300,
+    "use_precompiled_packages": true,
+    "vpc_config": {
+      "SecurityGroupIds": [
+        "sg-04e15e63"
+      ],
+      "SubnetIds": [
+        "subnet-ce2adbb9",
+        "subnet-939a51f6"
+      ]
+    },
+    "environment_variables": {
+            "config_env": "dev"
+    },
+    "events": [
+            {
+              "function": "cron.status_handler.jobs_update",
+              "expression": "rate(1 minute)"
+            }
+            ]
+  }
+}

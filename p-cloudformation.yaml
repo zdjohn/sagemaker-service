@@ -1,0 +1,71 @@
+Description: Manages AWS permissions for its corresponding Zappa project
+Resources:
+  ZappaAppLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+                - lambda.amazonaws.com
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: 'DefaultLambdaPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                  - ec2:AttachNetworkInterface
+                  - ec2:CreateNetworkInterface
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeInstances
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DetachNetworkInterface
+                  - ec2:ModifyNetworkInterfaceAttribute
+                  - ec2:ResetNetworkInterfaceAttribute
+                  - sagemaker:*
+                  - dynamodb:*
+                  - sns:*
+                  - sqs:*
+                Resource:
+                  - '*'
+        - PolicyName: 'AllowRollbacksBucket'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:Get*
+                  - s3:List*
+                  - s3:Put*
+                  - s3:Delete*
+                Resource:
+                  - 'arn:aws:s3:::domain-mobile-ap-southeast-2' # rollbacks bucket
+        - PolicyName: 'SagemakerPassRole'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - 'arn:aws:iam::570761704186:role/service-role/AmazonSageMaker-ExecutionRole-20171211T115480'
+
+Outputs:
+  ZappaAppLambdaRoleName:
+    Description: The name of the created IAM role for zappa app Lambda
+    Value: !Ref ZappaAppLambdaRole
+  ZappaAppLambdaRoleArn:
+    Description: The name of the created IAM role for zappa app Lambda
+    Value: !GetAtt ZappaAppLambdaRole.Arn
